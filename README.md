@@ -46,3 +46,30 @@ Run it
 ``` bash
 node dist/index.js
 ```
+
+## Set up WebAssembly
+
+Install tools
+``` bash
+npm install --save-dev assemblyscript
+```
+
+Initialize AssemblyScript
+``` bash
+npx asinit .
+```
+
+AssemblyScript is a subset of TypeScript; hence, some code adjustments might be necessary. 
+
+Compile to WebAssembly
+``` bash
+npm run asbuild
+```
+
+Install AssemblyScript loader
+``` bash
+npm install @assemblyscript/loader
+```
+
+In WebAssembly, strings are not handled as high-level objects like in JavaScript. Instead, they are sequences of bytes stored in linear memory. When you return a string from a WebAssembly function, what you get in JavaScript is typically a pointer (an integer) to the location of the string in WebAssembly memory, not the string itself.
+
