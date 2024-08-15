@@ -1,4 +1,10 @@
 
+What we will cover
+
+Gotchas?
+Syntatically, strings look like modern objects, such as strings in python or javascript; under the hood, they are treated as byte arrays, such as in C and C++. (See String interpretation)
+
+
 ``` bash
 npm init -y
 npm install --save-dev typescript
@@ -73,3 +79,27 @@ npm install @assemblyscript/loader
 
 In WebAssembly, strings are not handled as high-level objects like in JavaScript. Instead, they are sequences of bytes stored in linear memory. When you return a string from a WebAssembly function, what you get in JavaScript is typically a pointer (an integer) to the location of the string in WebAssembly memory, not the string itself.
 
+
+## Call From Golang
+``` bash
+mkdir go
+cd go/
+go mod init jiaming/webassembly-test
+go mod tidy
+```
+
+
+### String Interpretation
+
+The string data in the result array shows a pattern where each character is followed by a 0x00 byte (e.g., H = 0x48, e = 0x65, l = 0x6c). This is typical for UTF-16LE (little-endian) encoding, where each character is represented by two bytes. The second byte in this encoding is usually 0x00 for standard ASCII characters.
+
+Example:
+
+The first few characters of the string in the result array:
+H = 0x48 0x00
+e = 0x65 0x00
+l = 0x6c 0x00
+l = 0x6c 0x00
+o = 0x6f 0x00
+...
+This pattern suggests that the string "Hello, Jamal! Welcome..." is stored in memory in a format where each character is two bytes long due to UTF-16 encoding.
