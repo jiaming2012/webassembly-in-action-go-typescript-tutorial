@@ -1,15 +1,12 @@
 package main
 
 import (
-	"C"
+	"encoding/binary"
 	"fmt"
 	"os"
+	"unicode/utf16"
 
 	"github.com/wasmerio/wasmer-go/wasmer"
-)
-import (
-	"encoding/binary"
-	"unicode/utf16"
 )
 
 func readMemoryString(data []byte, offset int32) string {
@@ -61,7 +58,7 @@ func main() {
 	// Read the WebAssembly module file
 	wasmBytes, err := os.ReadFile("../build/release.wasm")
 	if err != nil {
-		panic(fmt.Errorf("Failed to read the WebAssembly module file: %v", err))
+		panic(fmt.Errorf("failed to read the WebAssembly module file: %v", err))
 	}
 
 	// Create an engine
@@ -73,7 +70,7 @@ func main() {
 	// Compile the module
 	module, err := wasmer.NewModule(store, wasmBytes)
 	if err != nil {
-		panic(fmt.Errorf("Failed to compile module: %v", err))
+		panic(fmt.Errorf("failed to compile module: %v", err))
 	}
 
 	// Instantiate the module
