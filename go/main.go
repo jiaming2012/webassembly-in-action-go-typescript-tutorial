@@ -28,18 +28,12 @@ func readMemoryString(data []byte, offset int32) string {
 	return string(runes)
 }
 
-func writeNameToMemory(name string, instance *wasmer.Instance, memory *wasmer.Memory) (int32, error) {
+func writeNameToMemory(name string, instance *wasmer.Instance, memory *wasmer.Memory, allocateFn func(...interface{}) (interface{}, error)) (int32, error) {
 	utf16CodeUnits := utf16.Encode([]rune(name))
-
-	// Allocate memory for the input string in the WebAssembly module
-	allocate, err := instance.Exports.GetFunction("allocate")
-	if err != nil {
-		return 0, fmt.Errorf("failed to get the `allocate` function: %w", err)
-	}
 
 	// `allocate` function needs to be implemented in your AssemblyScript code
 	// It should allocate enough space for the input string and return a pointer to the start of the block
-	inputPointer, err := allocate(len(utf16CodeUnits) * 2)
+	inputPointer, err := allocateFn(len(utf16CodeUnits) * 2)
 	if err != nil {
 		return 0, fmt.Errorf("failed to allocate memory for the input string: %w", err)
 	}
@@ -119,7 +113,13 @@ func main() {
 		panic(fmt.Errorf("failed to get the memory: %v", err))
 	}
 
-	inputOffset, err := writeNameToMemory("Jamal", instance, memory)
+	// Allocate memory for the input string in the WebAssembly module
+	allocate, err := instance.Exports.GetFunction("allocate")
+	if err != nil {
+		panic(fmt.Errorf("failed to get the `allocate` function: %w", err))
+	}
+
+	inputOffset, err := writeNameToMemory("Jamal", instance, memory, allocate)
 	if err != nil {
 		panic(fmt.Errorf("failed to write the input string to memory: %v", err))
 	}
@@ -136,6 +136,19 @@ func main() {
 	}
 
 	outputString := readMemoryString(memory.Data(), outputPointer.(int32))
+
+	// Deallocate the memory
+	deallocate, err := instance.Exports.GetFunction("deallocate")
+	if err != nil {
+		panic(fmt.Errorf("failed to get the `deallocate` function: %v", err))
+	}
+
+	_, err = deallocate(inputOffset)
+	if err != nil {
+		panic(fmt.Errorf("failed to deallocate the input string: %v", err))
+	}
+
+	fmt.Println("Golang - WebAssembly Example")
 
 	fmt.Println("[greet] Output:", outputString)
 
