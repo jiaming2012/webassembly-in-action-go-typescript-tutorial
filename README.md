@@ -1,5 +1,9 @@
+It seems that there will never be a single programming language. Unified APIs are important to create sdks that can be used in multiple languages.
 
-What we will cover
+What we will cover:
+- compile a TypeScipt program into WebAssembly, which exports two functions, one to add two numbers and and another to concatenate a string
+- call both functions in a separate JavaScript program
+- call both functions in a separate Golang program
 
 Gotchas?
 Syntatically, strings look like modern objects, such as strings in python or javascript; under the hood, they are treated as byte arrays, such as in C and C++. (See String interpretation)

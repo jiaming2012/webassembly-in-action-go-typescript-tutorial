@@ -13,4 +13,14 @@ const greetPointer = wasmModule.exports.greet(namePointer);
 // Convert the WebAssembly string back to a JavaScript string
 const greetString = wasmModule.exports.__getString(greetPointer);
 
-console.log(greetString);
+// Add 3 and 4
+const result = wasmModule.exports.add(3, 4);
+
+console.log('NodeJS - WebAssembly Example');
+console.log('[greet] Output:', greetString);
+console.log('[add] Result:', result);
+
+
+
+
+

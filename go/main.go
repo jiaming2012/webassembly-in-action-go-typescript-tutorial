@@ -137,5 +137,18 @@ func main() {
 
 	outputString := readMemoryString(memory.Data(), outputPointer.(int32))
 
-	fmt.Println("Output:", outputString)
+	fmt.Println("[greet] Output:", outputString)
+
+	// Call the `add` function
+	add, err := instance.Exports.GetFunction("add")
+	if err != nil {
+		panic(fmt.Errorf("failed to get the `add` function: %v", err))
+	}
+
+	result, err := add(3, 4)
+	if err != nil {
+		panic(fmt.Errorf("failed to call the `add` function: %v", err))
+	}
+
+	fmt.Println("[add] Result:", result)
 }
